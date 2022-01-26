@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import AbortController from "abort-controller";
 import { EpayConstant } from "../constants/index.js";
 import { EpayModel } from "../models/index.js";
-const TIME_EPAY = 60000;
+const TIME_EPAY = 100;
 
 const serviceInvoice = async (body, action = 1) => {
   const invoiceUrl = process.env.INVOICE_URL;
@@ -46,6 +46,13 @@ const serviceEpay = async (model, action) => {
     res = await fetch(`${epayUrl}?WSDL`, option);
   } catch (_error) {
     xml = EpayModel.modelToXml(model, action, true);
+    const optionReverse = {
+      method: "POST",
+      body: xml,
+      headers: {
+        "Content-Type": "text/xml; charset=utf-8"
+      }
+    };
     option.body = xml;
     await fetch(`${epayUrl}?WSDL`, option);
     hasError = true;
